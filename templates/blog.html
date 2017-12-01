@@ -9,7 +9,8 @@
 </head>
 	<body class="body">
 		<h2>Welcome to your blog</h2>
-		<form class="form-border" action="/add_post" method="POST">
+		<form id="form" class="form-border" action="/add_post" method="POST">
+			<input id="input-id" type="hidden" name="id"></input>
 			<div class="title wrapper">
 				<input id="input-title" type="text" name="title" placeholder="Title"></input>
 			</div>
@@ -30,14 +31,38 @@
 				<div class="post">
 					<div> {{ post.post }} </div>
 				</div>
+				<button id="btn-update" data-id="{{ post._id }}" data-title="{{ post.title }}" data-post="{{ post.post }}" onclick="update(this)">
+					Update
+				</button>
+				<button id="btn-delete" data-id="{{ post._id }}" onclick="delete_post(this)">
+					Delete
+				</button>
 		  	</div>
 		{% endfor %}
-	
 	</body>
 
 </html>
 
+<script>
+	function update(param) {
+	    var post_id = param.getAttribute("data-id");
+	    var post_title = param.getAttribute("data-title");
+	    var post_post = param.getAttribute("data-post");
 
+	    document.getElementById("input-id").value = post_id;
+	    document.getElementById("input-title").value = post_title;
+	    document.getElementById("input-post").value = post_post;
+	    document.getElementById("form").setAttribute("action", "/update_post");
+	}
 
+	function delete_post(param){
+		var post_id = param.getAttribute('data-id');
 
-
+		fetch('/delete_post/'+post_id, {
+		    method: 'delete'
+		}).then(function(response) {
+		    window.location.reload();
+		}).catch(function(err) {
+		});
+	}
+</script>

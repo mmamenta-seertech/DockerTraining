@@ -10,8 +10,10 @@ services:
     image: swaggerapi/swagger-ui
     ports:
       - "80:8080"
+    volumes:
+        - .:/app
     environment:
-      - API_URL=http://localhost:8082/swagger.json
+      - API_URL=http://localhost:8082/swagger.yaml
     networks:
       - docker_cont_network
   swagger-editor:
