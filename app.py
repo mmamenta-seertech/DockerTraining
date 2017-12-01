@@ -7,7 +7,6 @@ import socket
 from bson import ObjectId
 
 
-
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
@@ -34,11 +33,26 @@ def add_post():
     return redirect(url_for('landing_page'))
 
 
+@app.route('/update_post', methods=['POST'])
+def update_post():
+
+    update()
+    return redirect(url_for('landing_page'))
+
+
 @app.route('/remove_all')
 def remove_all():
     db.blogpostDB.delete_many({})
 
     return redirect(url_for('landing_page'))
+
+
+@app.route('/delete_post/<post_id>', methods=['DELETE'])
+def delete_post(post_id):
+
+    delete(post_id)
+
+    return {'message':"Successfully deleted."}, 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 
 
@@ -68,12 +82,25 @@ def new():
     return JSONEncoder().encode(posts[-1])
 
 
-### Insert function here ###
+@app.route('/update', methods=['POST'])
+def update():
+
+    item = {'_id': ObjectId(request.form['id'])}
+    item_doc = {
+        'title': request.form['title'],
+        'post': request.form['post']
+    }
+    db.blogpostDB.update(item, item_doc)
+
+    return {'response': 'Successfully updated'}
 
 
+def delete(post_id):
 
-############################
+    db.blogpostDB.remove({'_id':ObjectId(post_id)})
 
+    _posts = db.blogpostDB.find({'_id':ObjectId(post_id)})
+    return _posts
 
 
 if __name__ == "__main__":
